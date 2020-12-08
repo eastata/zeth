@@ -31,7 +31,20 @@ function check_contracts() {
 
 function check_client() {
     pushd client
-    python3 -m venv env
+
+    echo check_client:
+    date
+
+    if ! [ -e env ] ; then
+        echo Create venv
+        python3 -m venv env
+
+        echo check_client: created venv
+        date
+    else
+        echo check_client: existing venv
+    fi
+
     . env/bin/activate
     pip install --upgrade pip --progress-bar off
     pip install --upgrade setuptools wheel
@@ -40,6 +53,9 @@ function check_client() {
 
     deactivate
     popd
+
+    echo check_client: end
+    date
 }
 
 function check_cpp() {
