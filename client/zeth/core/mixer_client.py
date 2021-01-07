@@ -21,7 +21,7 @@ from zeth.core.zksnark import IZKSnarkProvider, get_zksnark_provider, \
     ExtendedProof
 from zeth.core.utils import EtherValue, digest_to_binary_string, \
     int64_to_hex, message_to_bytes, eth_address_to_bytes32, to_zeth_units, \
-    get_contracts_dir, hex_list_to_uint256_list, eth_uint256_to_int
+    get_contracts_dir, hex_list_to_uint256_list
 from zeth.core.prover_client import ProverConfiguration, ProverClient
 from zeth.api.zeth_messages_pb2 import ZethNote, JoinsplitInput, ProofInputs
 
@@ -295,7 +295,7 @@ class MixerClient:
             token_address or ZERO_ADDRESS,     # token
             zksnark.verification_key_to_contract_parameters(vk, pp),  # vk
             permitted_dispatcher or ZERO_ADDRESS,  # permitted_dispatcher
-            eth_uint256_to_int(vk_hash) if vk_hash else 0,  # vk_hash
+            int(vk_hash, 16) if vk_hash else 0,  # vk_hash
         ]
         mixer_description = contracts.InstanceDescription.deploy(
             web3,
