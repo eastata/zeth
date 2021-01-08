@@ -1,4 +1,6 @@
-FROM clearmatics/zeth-base:latest
+FROM ghcr.io/eastata/zeth:base-latest
+
+LABEL org.opencontainers.image.source https://github.com/eastata/zeth
 
 COPY . /home/zeth
 

@@ -1,0 +1,51 @@
+name: "Docker build"
+
+on:
+  push:
+    branches:
+      - docker-cache
+
+env:
+  REPO_OWNER: "eastata"
+
+jobs:
+  docker-build:
+    name: "Docker build and push"
+    runs-on: ubuntu-20.04
+    timeout-minutes: 60
+
+    strategy:
+      matrix:
+        app: ['mpc', 'client', 'prover']
+      max-parallel: 3
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Configure Docker"
+        run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+
+#      - name: "Docker pull cache"
+#        run: docker pull ghcr.io/$REPO_OWNER/zeth:${{ matrix.app }}-cache
+
+      - name: "Get vars from git"
+        id: git_vars
+        run: echo ::set-output name=COMMIT_HASH::$(git rev-parse --short HEAD)
+
+      - name: "Set up Buildx"
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+          qemu-version: latest
+
+      - name: "Buildx build"
+        run: |
+          docker buildx build \
+            --tag ghcr.io/$REPO_OWNER/zeth:${{ matrix.app }}-git-${{ steps.git_vars.outputs.COMMIT_HASH }} \
+#            --cache-from=type=registry,ref=ghcr.io/$REPO_OWNER/zeth:${{ matrix.app }}-cache \
+#            --cache-to=type=registry,ref=ghcr.io/$REPO_OWNER/zeth:${{ matrix.app }}-cache \
+            --platform linux/amd64 \
+            --output "type=image,push=true" \
+            --file ./Dockerfile-${{ matrix.app }} ./

@@ -1,4 +1,6 @@
-FROM clearmatics/zeth-base:v0.0.0 AS stage1
+FROM ghcr.io/eastata/zeth:base-v0.0.1 AS stage1
+
+LABEL org.opencontainers.image.source https://github.com/eastata/zeth
 
 ENV ZETH_PATH=/home/zeth
 # Copy necessary files in the docker container
